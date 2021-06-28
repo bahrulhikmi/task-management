@@ -1,38 +1,39 @@
+import { TaskRepository } from './task.repository';
 import { stat } from 'fs';
 import { CreateTaskDto } from './dto/create-task.dto';
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { TaskStatus } from './task-status.enum';
 import { GetTasksFilterDto } from './dto/get-tasks-filter.dto';
+import { InjectRepository } from '@nestjs/typeorm';
+import { Task } from './task.entity';
 
 @Injectable()
 export class TasksService {
+
+    constructor(
+        @InjectRepository(TaskRepository)
+        private taskRepository: TaskRepository
+    ) { }
+
+
+
     // getAllTasks(): Task[] {
     //     return this.tasks;
     // }
 
-    // createTask(createTaskDto: CreateTaskDto): Task {
-    //     const { title, description } = createTaskDto;
+    createTask(createTaskDto: CreateTaskDto): Promise<Task> {
+        return this.taskRepository.createTask(createTaskDto);
+    }
 
-    //     const task: Task = {
-    //         id: uuid.v1(),
-    //         title,
-    //         description,
-    //         status: TaskStatus.OPEN,
-    //     };
+    async getTaskById(id: number): Promise<Task> {
+        const foundTask = await this.taskRepository.findOne(id);
 
-    //     this.tasks.push(task);
-    //     return task;
-    // }
+        if (!foundTask) {
+            throw new NotFoundException(`Task with Id ${id} not found.`);
+        }
 
-    // getTaskById(id: string): Task {
-    //     const foundTask = this.tasks.find(x => x.id === id);
-
-    //     if (!foundTask) {
-    //         throw new NotFoundException(`Task with Id ${id} not found.`);
-    //     }
-
-    //     return foundTask;
-    // }
+        return foundTask;
+    }
 
     // deleteTaskById(id: string) {
     //     const task = this.getTaskById(id);
