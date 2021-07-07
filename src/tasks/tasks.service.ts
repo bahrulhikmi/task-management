@@ -35,17 +35,21 @@ export class TasksService {
         return foundTask;
     }
 
-    // deleteTaskById(id: string) {
-    //     const task = this.getTaskById(id);
-    //     this.tasks.splice(this.tasks.findIndex(x => x.id === task.id), 1);
-    // }
+    async deleteTaskById(id: number): Promise<void> {
+        const result = await this.taskRepository.delete(id);  
+        
+        if(result.affected === 0)
+        {
+            throw new NotFoundException(`Task with Id ${id} not found.`);
+        }
+    }
 
-    // updateTaskStatus(id: string, status: TaskStatus): Task {
-    //     const task = this.getTaskById(id);
-    //     task.status = status;
-
-    //     return task;
-    // }
+    async updateTaskStatus(id: number, status: TaskStatus): Promise<Task> {
+        const task = await this.getTaskById(id);
+        task.status = status;
+        task.save()
+        return task;
+    }
 
 
     // getTasksWithFilter(filterDto: GetTasksFilterDto): Task[] {
