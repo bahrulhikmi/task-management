@@ -8,5 +8,7 @@ export class TaskStatusValidationPipe implements PipeTransform {
         if (!Object.values(TaskStatus).includes(value)) {
             throw new BadRequestException(`${value} is an invalid status.`)
         }
+
+        return value;
     }
 }
